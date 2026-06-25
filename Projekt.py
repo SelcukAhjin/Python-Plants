@@ -1,6 +1,6 @@
 import flet as ft
 import ssl
-import requests as rq
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def main(page: ft.Page):
