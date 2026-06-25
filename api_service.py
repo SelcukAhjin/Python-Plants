@@ -13,7 +13,6 @@ def suchePflanze(suchbegriff):
     print(details)
     return name,sciName
 
-
 def getPflegeDaten(pflanzen_id):
     antwort = rq.get(f"https://trefle.io/api/v1/species/{pflanzen_id}?token={ak.API_KEY}")
     if antwort.status_code == 200:
