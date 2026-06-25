@@ -1,5 +1,6 @@
 import flet as ft
 import ssl
+import api_service
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -16,6 +17,8 @@ def main(page: ft.Page):
 
     def buttonWurdeGeklickt(e):
         meinLabel.value = f"Wird nach {meinEingabefeld.value} Gesucht"
+        gefundenerName = api_service.suchePflanze(meinEingabefeld.value)
+        ergebnisName.value = f"Gefunden: {gefundenerName}"
         page.update()
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)
 
