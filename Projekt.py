@@ -1,6 +1,6 @@
 import flet as ft
 import ssl
-
+import requests as rq
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def main(page: ft.Page):
@@ -10,6 +10,9 @@ def main(page: ft.Page):
 
     meinLabel = ft.Text(value ="Willkommen zum Botaniker")
     meinEingabefeld = ft.TextField(label="Nach welcher Pflanze suchen Sie ?")
+    ergebnisName = ft.Text(value="")
+    ergebnisBotanisch = ft.Text(value="")
+    ergebnisSonne = ft.Text(value="")
 
     def buttonWurdeGeklickt(e):
         meinLabel.value = f"Wird nach {meinEingabefeld.value} Gesucht"
@@ -18,6 +21,9 @@ def main(page: ft.Page):
 
     meinLayoutSpalte = ft.Column(
         controls = [
+            ergebnisBotanisch,
+            ergebnisSonne,
+            ergebnisName,
             meinLabel,
             meinEingabefeld,
             meinButton
