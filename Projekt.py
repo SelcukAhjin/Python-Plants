@@ -17,19 +17,21 @@ def main(page: ft.Page):
 
     def buttonWurdeGeklickt(e):
         meinLabel.value = f"Wird nach {meinEingabefeld.value} Gesucht"
-        gefundenerName = api_service.suchePflanze(meinEingabefeld.value)
-        ergebnisName.value = f"Gefunden: {gefundenerName}"
+        gefundenerName1,gefundenerName2 = api_service.suchePflanze(meinEingabefeld.value)
+        ergebnisName.value = f"Gefunden: {gefundenerName1}"
+        ergebnisBotanisch.value = f"Gefunden: {gefundenerName2}"
+
         page.update()
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)
 
     meinLayoutSpalte = ft.Column(
         controls = [
-            ergebnisBotanisch,
-            ergebnisSonne,
-            ergebnisName,
             meinLabel,
             meinEingabefeld,
-            meinButton
+            meinButton,
+            ergebnisName,
+            ergebnisBotanisch,
+            ergebnisSonne
         ],
         spacing=20
     )
