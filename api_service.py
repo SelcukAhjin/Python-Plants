@@ -1,33 +1,35 @@
 import requests as rq
-
-API_KEY = "sk-8VDw6a3ccec036ac818405"
+import API_KEY as ak
 
 def suchePflanze(suchbegriff):
     Daten = getRohDaten(suchbegriff)
+    print(Daten)
     name = Daten["common_name"]
-    sciName = Daten['scientific_name'][0]
-    id = Daten['id']
-    getPflegeDaten(id)
+    print(name)
+    sciName = Daten['scientific_name']
+    print(sciName)
+    id = Daten["id"]
+    details = getPflegeDaten(id)
+    print(details)
     return name,sciName
 
 
 def getPflegeDaten(pflanzen_id):
-    antwort = rq.get(f"https://perenual.com/api/species/details/{pflanzen_id}?key={API_KEY}")
+    antwort = rq.get(f"https://trefle.io/api/v1/species/{pflanzen_id}?token={ak.API_KEY}")
     if antwort.status_code == 200:
         rohDaten = antwort.json()
         schritt1 = rohDaten["data"]
-        schritt2 = schritt1[0]
-        return schritt2
+        return schritt1
     else:
         print(antwort.status_code)
         print(antwort.text)
         return "Nicht verfügbar (API LIMIT)"
 
 def getRohDaten(suchbegriff):
-    antwort = rq.get(f"https://perenual.com/api/species-list?key={API_KEY}&q={suchbegriff}")
+    antwort = rq.get(f"https://trefle.io/api/v1/plants/search?token={ak.API_KEY}&q={suchbegriff}")
     rohDaten = antwort.json()
-    schritt1 = rohDaten["data"]
-    schritt2 = schritt1[0]
+    schritt1 = rohDaten["data"][0]
+    schritt2 = schritt1
     return schritt2
 
 a,b=suchePflanze("monstera")
