@@ -2,7 +2,6 @@ import flet as ft
 import ssl
 import api_service
 import Wetter_API as wa
-from Wetter_API import wetter
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -60,13 +59,40 @@ def main(page: ft.Page):
             )
         )
     )
+
+
+    vorhersageReihe = ft.Row(scroll="auto")
+    wetter_daten_liste = wa.durchDieListe()
+    for eintrag in wetter_daten_liste:
+        wetterKarteKleinTemp = int(eintrag["main"]["temp"])
+        wetterKarteKleinWetter = eintrag["weather"][0]["description"]
+        wetterKarteKleinIcon = eintrag["weather"][0]["icon"]
+        kleine_karte = ft.Card(
+            elevation=5,
+            content=ft.Container(
+                padding=20,
+                content=ft.Row(
+                    controls=[
+                        ft.Image(src=f"https://openweathermap.org/img/wn/{wetterKarteKleinIcon}@2x.png", width=50, height=50),
+                        ft.Column(
+                            controls=[
+                                ft.Text(value=f"{wetterKarteKleinTemp}°C",size=20, weight="bold"),
+                                ft.Text(wetterKarteKleinWetter,size=8, color="grey")
+                            ]
+                        )
+                    ]
+                )
+            )
+        )
+        vorhersageReihe.controls.append(kleine_karte)
+
     meineWetterSpalte = ft.Column(
         controls = [
             wetterKarte,
+            vorhersageReihe
         ],
         spacing=20
     )
-
     meine_leiste = ft.TabBar(
         tabs=[
             ft.Tab(label="Suche"),
