@@ -1,7 +1,24 @@
 import requests as rq
 import API_KEY as ak
 
+
 def suchePflanze(suchbegriff):
+    mock_daten = {
+        "common_name": f"Dummy {suchbegriff.capitalize()}",
+        "scientific_name": "Monstera deliciosa (Mock)",
+        "light": "Viel indirektes Sonnenlicht",
+        "watering": "Einmal pro Woche gießen",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/04/Monstera_deliciosa3.jpg"
+            }
+
+    name = mock_daten["common_name"]
+    sciName = mock_daten["scientific_name"]
+    sonne = mock_daten["light"]
+    bild = mock_daten["image_url"]
+
+    return name, sciName, sonne, bild
+
+"""def suchePflanze(suchbegriff):
     Daten = getRohDaten(suchbegriff)
     print(Daten)
     name = Daten["common_name"]
@@ -12,23 +29,33 @@ def suchePflanze(suchbegriff):
     details = getPflegeDaten(id)
     print(details)
     return name,sciName
+"""
 
-def getPflegeDaten(pflanzen_id):
-    antwort = rq.get(f"https://trefle.io/api/v1/species/{pflanzen_id}?token={ak.API_KEY}")
-    if antwort.status_code == 200:
-        rohDaten = antwort.json()
-        schritt1 = rohDaten["data"]
-        return schritt1
+def getPflegeDaten(suchbegriff):
+    url = "https://house-plants2.p.rapidapi.com/search"
+    querystring = {"query": suchbegriff}
+    headers = {
+        "x-rapidapi-key": ak.API_KEY,
+        "x-rapidapi-host": "house-plants2.p.rapidapi.com"
+    }
+    response = rq.get(url, headers=headers, params=querystring)
+    if response.status_code == 200:
+        return response.json()
     else:
-        print(antwort.status_code)
-        print(antwort.text)
-        return "Nicht verfügbar (API LIMIT)"
+        return None
+
 
 def getRohDaten(suchbegriff):
-    antwort = rq.get(f"https://trefle.io/api/v1/plants/search?token={ak.API_KEY}&q={suchbegriff}")
-    rohDaten = antwort.json()
-    schritt1 = rohDaten["data"][0]
-    schritt2 = schritt1
-    return schritt2
+    url = "https://house-plants2.p.rapidapi.com/search"
+    headers = {
+        "x-rapidapi-key": ak.API_KEY,
+        "x-rapidapi-host": "house-plants2.p.rapidapi.com"
+    }
+    querystring = {"query": suchbegriff}
+    response = rq.get(url, headers=headers, params=querystring)
 
-a,b=suchePflanze("monstera")
+    daten_liste = response.json()
+    print(daten_liste)
+    return daten_liste[0]
+
+a=suchePflanze("monstera")
