@@ -16,7 +16,6 @@ def durchDieListe():
             neueListe.append(wetterTage)
             if(counter==len(neueListe)):
                 break
-    print(neueListe)
     return neueListe
 
 

@@ -23,7 +23,6 @@ def main(page: ft.Page):
         ergebnisBotanisch.value = f"Gefunden: {gefundenerName2}"
         ergebnisSonne.value= f"gefunden: {gefundeneSonne}"
         meinBild.src = Bild
-        print(meinBild.src)
         meinBild.update()
         page.update()
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)

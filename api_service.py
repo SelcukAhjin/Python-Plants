@@ -55,7 +55,6 @@ def getRohDaten(suchbegriff):
     response = rq.get(url, headers=headers, params=querystring)
 
     daten_liste = response.json()
-    print(daten_liste)
     return daten_liste[0]
 
 a=suchePflanze("monstera")
