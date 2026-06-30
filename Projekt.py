@@ -9,14 +9,14 @@ def main(page: ft.Page):
     page.title = "Flower Power At your Hour"
     page.window.width = 400
     page.window.height = 700
-    meinLabel = ft.Text(value ="Willkommen zum Botaniker")
+    meinLabel = ft.Text(value ="Willkommen zum Botaniker", size=30 )
     meinEingabefeld = ft.TextField(label="Nach welcher Pflanze suchen Sie ?")
     ergebnisName = ft.Text(value="")
     ergebnisBotanisch = ft.Text(value="")
     ergebnisSonne = ft.Text(value="")
     meinBild = ft.Image(src="https://via.placeholder.com/150", width=200, height=200)
     alarmText = ft.Text(value="", weight="bold", size=16, visible=False)
-
+    alarmTipp = ft.Text(value="", size=14, color=ft.Colors.GREY_400, italic=True, visible=False)
 
 
     def buttonWurdeGeklickt(e):
@@ -31,16 +31,20 @@ def main(page: ft.Page):
             alarmText.value = "Achtung: Es ist zu warm!"
             alarmText.visible = True
             alarmText.color = ft.Colors.RED
-
+            alarmTipp.value = "Tipp: Pflanze in denn Schatten"
+            alarmTipp.visible = True
         elif wa.temperatur() < mintemp:
             alarmText.value = "Achtung: Es ist zu kalt!"
             alarmText.visible = True
             alarmText.color = ft.Colors.RED
+            alarmTipp.value = "Tipp: Pflanze am besten reinnehmen"
+            alarmTipp.visible = True
 
         else:
             alarmText.value = "Temperatur ist optimal!"
             alarmText.visible = False
             alarmText.color = ft.Colors.GREEN
+            alarmTipp.visible = False
 
         alarmText.update()
         meinBild.update()
@@ -74,7 +78,8 @@ def main(page: ft.Page):
                         controls=[
                             ft.Text(value=f"{wa.temperatur()}°C",size=40, weight="bold"),
                             ft.Text(wa.wetter().capitalize(),size=16, color="grey"),
-                            alarmText
+                            alarmText,
+                            alarmTipp
                         ]
                     )
                 ]
