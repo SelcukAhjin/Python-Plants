@@ -82,7 +82,6 @@ def main(page: ft.Page):
         )
     )
 
-
     vorhersageReihe = ft.Row(scroll="auto")
     wetterDatenListe = wa.durchDieListe()
     for eintrag in wetterDatenListe:

@@ -48,7 +48,6 @@ def getPflegeDaten(suchbegriff):
     else:
         return None
 
-
 def getRohDaten(suchbegriff):
     url = "https://house-plants2.p.rapidapi.com/search"
     headers = {
