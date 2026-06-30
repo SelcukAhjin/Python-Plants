@@ -4,6 +4,8 @@ import API_KEY as ak
 
 def suchePflanze(suchbegriff):
     mock_daten = {
+        "temp_max":20,
+        "temp_min": 15,
         "common_name": f"Dummy {suchbegriff.capitalize()}",
         "scientific_name": "Monstera deliciosa (Mock)",
         "light": "Viel indirektes Sonnenlicht",
@@ -11,12 +13,14 @@ def suchePflanze(suchbegriff):
         "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/04/Monstera_deliciosa3.jpg"
             }
 
+    temp_max = mock_daten['temp_max']
+    temp_min = mock_daten['temp_min']
     name = mock_daten["common_name"]
     sciName = mock_daten["scientific_name"]
     sonne = mock_daten["light"]
     bild = mock_daten["image_url"]
 
-    return name, sciName, sonne, bild
+    return name, sciName, sonne, bild, temp_max, temp_min
 
 """def suchePflanze(suchbegriff):
     Daten = getRohDaten(suchbegriff)

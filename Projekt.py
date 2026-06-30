@@ -15,14 +15,34 @@ def main(page: ft.Page):
     ergebnisBotanisch = ft.Text(value="")
     ergebnisSonne = ft.Text(value="")
     meinBild = ft.Image(src="https://via.placeholder.com/150", width=200, height=200)
+    alarmText = ft.Text(value="", weight="bold", size=16, visible=False)
+
+
 
     def buttonWurdeGeklickt(e):
         meinLabel.value = f"Wird nach {meinEingabefeld.value} Gesucht"
-        gefundenerName1,gefundenerName2,gefundeneSonne,Bild = api_service.suchePflanze(meinEingabefeld.value)
+        gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = api_service.suchePflanze(meinEingabefeld.value)
         ergebnisName.value = f"Gefunden: {gefundenerName1}"
         ergebnisBotanisch.value = f"Gefunden: {gefundenerName2}"
         ergebnisSonne.value= f"gefunden: {gefundeneSonne}"
         meinBild.src = Bild
+        
+        if wa.temperatur() > maxtemp:
+            alarmText.value = "Achtung: Es ist zu warm!"
+            alarmText.visible = True
+            alarmText.color = ft.Colors.RED
+
+        elif wa.temperatur() < mintemp:
+            alarmText.value = "Achtung: Es ist zu kalt!"
+            alarmText.visible = True
+            alarmText.color = ft.Colors.RED
+
+        else:
+            alarmText.value = "Temperatur ist optimal!"
+            alarmText.visible = False
+            alarmText.color = ft.Colors.GREEN
+
+        alarmText.update()
         meinBild.update()
         page.update()
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)
@@ -38,7 +58,9 @@ def main(page: ft.Page):
             ergebnisSonne,
             meinBild,
         ],
-        spacing=20
+        spacing=20,
+        scroll="auto",
+        expand=True,
     )
 
     wetterKarte = ft.Card(
@@ -51,7 +73,8 @@ def main(page: ft.Page):
                     ft.Column(
                         controls=[
                             ft.Text(value=f"{wa.temperatur()}°C",size=40, weight="bold"),
-                            ft.Text(wa.wetter().capitalize(),size=16, color="grey")
+                            ft.Text(wa.wetter().capitalize(),size=16, color="grey"),
+                            alarmText
                         ]
                     )
                 ]
@@ -61,12 +84,12 @@ def main(page: ft.Page):
 
 
     vorhersageReihe = ft.Row(scroll="auto")
-    wetter_daten_liste = wa.durchDieListe()
-    for eintrag in wetter_daten_liste:
+    wetterDatenListe = wa.durchDieListe()
+    for eintrag in wetterDatenListe:
         wetterKarteKleinTemp = int(eintrag["main"]["temp"])
         wetterKarteKleinWetter = eintrag["weather"][0]["description"]
         wetterKarteKleinIcon = eintrag["weather"][0]["icon"]
-        kleine_karte = ft.Card(
+        kleineKarte = ft.Card(
             elevation=5,
             content=ft.Container(
                 padding=20,
@@ -83,41 +106,50 @@ def main(page: ft.Page):
                 )
             )
         )
-        vorhersageReihe.controls.append(kleine_karte)
+        vorhersageReihe.controls.append(kleineKarte)
 
-    meineWetterSpalte = ft.Column(
-        controls = [
+
+    meineWetterSpalte=ft.Column(
+        controls=[
             wetterKarte,
-            vorhersageReihe
+            vorhersageReihe,
         ],
-        spacing=20
+        spacing=10,
+        scroll="auto",
+        expand=True,
     )
-    meine_leiste = ft.TabBar(
+    # 1. Die Tab-Leiste (TabBar - nur für die Beschriftung zuständig)
+    meineLeiste = ft.TabBar(
         tabs=[
             ft.Tab(label="Suche"),
             ft.Tab(label="Wetter"),
         ]
     )
 
-    meine_inhalte = ft.TabBarView(
+    # 2. Die Tab-Ansicht (TabBarView - hier kommen die Spalten rein)
+    meineInhalte = ft.TabBarView(
         expand=True,
         controls=[
             meineSucheSpalte,
             meineWetterSpalte,
-        ],
+        ]
     )
-    mein_haupt_ordner = ft.Tabs(
+
+    meinHauptOrdner = ft.Tabs(
         length=2,
         selected_index=0,
         expand=True,
         content=ft.Column(
             expand=True,
+            spacing=0,
             controls=[
-                meine_leiste,
-                meine_inhalte
+                meineLeiste,
+                meineInhalte
             ]
         )
     )
-    page.add(mein_haupt_ordner)
+
+    page.add(meinHauptOrdner)
+
 if __name__ == "__main__":
     ft.run(main)
