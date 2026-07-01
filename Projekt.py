@@ -1,6 +1,6 @@
 import flet as ft
 import ssl
-
+import datetime
 from flet import TextField
 
 import api_service
@@ -26,6 +26,7 @@ def main(page: ft.Page):
     wetterBeschreibung=ft.Text(wa.wetter().capitalize(),size=16, color="grey")
     wetterIcon=ft.Image(src=wa.icon(),width=100, height=100)
     wetterOrt = TextField(label="Geben Sie Ihre Stadt ein")
+    vorhersageReihe = ft.Row(scroll="auto")
 
     def wetterSuche(e):
         wa.ladeWetterDaten(wetterOrt.value)
@@ -33,6 +34,38 @@ def main(page: ft.Page):
         wetterBeschreibung.value = wa.wetter().capitalize()
         wetterIcon.src = wa.icon()
         wetterKarte.update()
+        vorhersageReihe.controls.clear()
+        wetterDatenListe = wa.durchDieListe()
+        for eintrag in wetterDatenListe:
+            wetterKarteKleinTemp = int(eintrag["main"]["temp"])
+            wetterKarteKleinWetter = eintrag["weather"][0]["description"]
+            wetterKarteKleinIcon = eintrag["weather"][0]["icon"]
+
+            datum_str = eintrag["dt_txt"]
+            datum_obj = datetime.datetime.strptime(datum_str, "%Y-%m-%d %H:%M:%S")
+            wochentag = datum_obj.strftime("%A")
+
+            kleineKarte = ft.Card(
+                elevation=5,
+                content=ft.Container(
+                    padding=20,
+                    content=ft.Row(
+                        controls=[
+                            ft.Image(src=f"https://openweathermap.org/img/wn/{wetterKarteKleinIcon}@2x.png", width=50, height=50),
+                            ft.Column(
+                                controls=[
+                                    ft.Text(value=wochentag, weight="bold", color=ft.Colors.BLUE_400),
+                                    ft.Text(value=f"{wetterKarteKleinTemp}°C",size=20, weight="bold"),
+                                    ft.Text(wetterKarteKleinWetter,size=8, color="grey")
+                                ]
+                            )
+                        ]
+                    )
+                )
+            )
+            vorhersageReihe.controls.append(kleineKarte)
+        vorhersageReihe.update()
+
     wetterButton = ft.Button("Wetter für Stadt suchen", on_click=wetterSuche)
 
     def buttonWurdeGeklickt(e):
@@ -67,6 +100,36 @@ def main(page: ft.Page):
         page.update()
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)
 
+    wetterDatenListe = wa.durchDieListe()
+    for eintrag in wetterDatenListe:
+        wetterKarteKleinTemp = int(eintrag["main"]["temp"])
+        wetterKarteKleinWetter = eintrag["weather"][0]["description"]
+        wetterKarteKleinIcon = eintrag["weather"][0]["icon"]
+
+        datum_str = eintrag["dt_txt"]
+        datum_obj = datetime.datetime.strptime(datum_str, "%Y-%m-%d %H:%M:%S")
+        wochentag = datum_obj.strftime("%A")
+
+        kleineKarte = ft.Card(
+            elevation=5,
+            content=ft.Container(
+                padding=20,
+                content=ft.Row(
+                    controls=[
+                        ft.Image(src=f"https://openweathermap.org/img/wn/{wetterKarteKleinIcon}@2x.png", width=50,
+                                 height=50),
+                        ft.Column(
+                            controls=[
+                                ft.Text(value=wochentag, weight="bold", color=ft.Colors.BLUE_400),
+                                ft.Text(value=f"{wetterKarteKleinTemp}°C", size=20, weight="bold"),
+                                ft.Text(wetterKarteKleinWetter, size=8, color="grey")
+                            ]
+                        )
+                    ]
+                )
+            )
+        )
+        vorhersageReihe.controls.append(kleineKarte)
 
     meineSucheSpalte = ft.Column(
         controls = [
@@ -103,30 +166,6 @@ def main(page: ft.Page):
         )
     )
 
-    vorhersageReihe = ft.Row(scroll="auto")
-    wetterDatenListe = wa.durchDieListe()
-    for eintrag in wetterDatenListe:
-        wetterKarteKleinTemp = int(eintrag["main"]["temp"])
-        wetterKarteKleinWetter = eintrag["weather"][0]["description"]
-        wetterKarteKleinIcon = eintrag["weather"][0]["icon"]
-        kleineKarte = ft.Card(
-            elevation=5,
-            content=ft.Container(
-                padding=20,
-                content=ft.Row(
-                    controls=[
-                        ft.Image(src=f"https://openweathermap.org/img/wn/{wetterKarteKleinIcon}@2x.png", width=50, height=50),
-                        ft.Column(
-                            controls=[
-                                ft.Text(value=f"{wetterKarteKleinTemp}°C",size=20, weight="bold"),
-                                ft.Text(wetterKarteKleinWetter,size=8, color="grey")
-                            ]
-                        )
-                    ]
-                )
-            )
-        )
-        vorhersageReihe.controls.append(kleineKarte)
 
 
     meineWetterSpalte=ft.Column(
