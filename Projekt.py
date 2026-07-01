@@ -1,14 +1,19 @@
 import flet as ft
 import ssl
+
+from flet import TextField
+
 import api_service
 import Wetter_API as wa
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def main(page: ft.Page):
+    spacingText=ft.Text(value="")
     page.title = "Flower Power At your Hour"
     page.window.width = 400
     page.window.height = 700
+    wa.ladeWetterDaten("Berlin")
     meinLabel = ft.Text(value ="Willkommen zum Botaniker", size=30 )
     meinEingabefeld = ft.TextField(label="Nach welcher Pflanze suchen Sie ?")
     ergebnisName = ft.Text(value="")
@@ -17,7 +22,18 @@ def main(page: ft.Page):
     meinBild = ft.Image(src="https://via.placeholder.com/150", width=200, height=200)
     alarmText = ft.Text(value="", weight="bold", size=16, visible=False)
     alarmTipp = ft.Text(value="", size=14, color=ft.Colors.GREY_400, italic=True, visible=False)
+    wetterTempText = ft.Text(value=f"{wa.temperatur()}°C", size=40, weight="bold")
+    wetterBeschreibung=ft.Text(wa.wetter().capitalize(),size=16, color="grey")
+    wetterIcon=ft.Image(src=wa.icon(),width=100, height=100)
+    wetterOrt = TextField(label="Geben Sie Ihre Stadt ein")
 
+    def wetterSuche(e):
+        wa.ladeWetterDaten(wetterOrt.value)
+        wetterTempText.value=f"{wa.temperatur()}°C"
+        wetterBeschreibung.value = wa.wetter().capitalize()
+        wetterIcon.src = wa.icon()
+        wetterKarte.update()
+    wetterButton = ft.Button("Wetter für Stadt suchen", on_click=wetterSuche)
 
     def buttonWurdeGeklickt(e):
         meinLabel.value = f"Wird nach {meinEingabefeld.value} Gesucht"
@@ -26,7 +42,7 @@ def main(page: ft.Page):
         ergebnisBotanisch.value = f"Gefunden: {gefundenerName2}"
         ergebnisSonne.value= f"gefunden: {gefundeneSonne}"
         meinBild.src = Bild
-        
+
         if wa.temperatur() > maxtemp:
             alarmText.value = "Achtung: Es ist zu warm!"
             alarmText.visible = True
@@ -73,11 +89,11 @@ def main(page: ft.Page):
             padding=20,
             content=ft.Row(
                 controls=[
-                    ft.Image(src=wa.icon(),width=100, height=100),
+                    wetterIcon,
                     ft.Column(
                         controls=[
-                            ft.Text(value=f"{wa.temperatur()}°C",size=40, weight="bold"),
-                            ft.Text(wa.wetter().capitalize(),size=16, color="grey"),
+                            wetterTempText,
+                            wetterBeschreibung,
                             alarmText,
                             alarmTipp
                         ]
@@ -115,6 +131,9 @@ def main(page: ft.Page):
 
     meineWetterSpalte=ft.Column(
         controls=[
+            spacingText,
+            wetterOrt,
+            wetterButton,
             wetterKarte,
             vorhersageReihe,
         ],

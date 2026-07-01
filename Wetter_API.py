@@ -1,13 +1,18 @@
 import requests as rq
 import API_KEY as ak
 
-stadt = "Berlin"
+global answer,answerWeather
 
-answer=rq.get(f"https://api.openweathermap.org/data/2.5/forecast?q={stadt}&appid={ak.wetter_api_key}&units=metric")
-answerWeather=rq.get(f"https://api.openweathermap.org/data/2.5/weather?q={stadt}&appid={ak.wetter_api_key}&units=metric")
+def ladeWetterDaten(sucheStadt):
+    global answerWeather,answer
+    answer=rq.get(f"https://api.openweathermap.org/data/2.5/forecast?q={sucheStadt}&appid={ak.wetter_api_key}&units=metric")
+    answerWeather=rq.get(f"https://api.openweathermap.org/data/2.5/weather?q={sucheStadt}&appid={ak.wetter_api_key}&units=metric")
+
+
 
 
 def durchDieListe():
+    global answer
     counter=0
     neueListe=[]
     liste = answer.json()["list"]
@@ -20,16 +25,18 @@ def durchDieListe():
 
 
 def wetter():
+    global anwerWeather
     wetter = answerWeather.json()["weather"][0]["description"]
     return wetter
 
 
 def temperatur():
+    global answerWeather
     temperatur = int(answerWeather.json()["main"]["temp"])
     return temperatur
 
 
 def icon():
+    global answerWeather
     icon = answerWeather.json()["weather"][0]["icon"]
     return f"https://openweathermap.org/img/wn/{icon}@2x.png"
-durchDieListe()
