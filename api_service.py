@@ -25,19 +25,14 @@ import API_KEY as ak
 
 def suchePflanze(suchbegriff):
     Daten = getRohDaten(suchbegriff)
-    print(Daten.keys())
-    print(Daten)
     name = Daten["item"]["Common name (fr.)"]
-    print(name)
     sciName = Daten["item"]['Latin name']
-    print(sciName)
     id = Daten["refIndex"]
     details = getPflegeDaten(id)
     img=Daten["item"]["Img"]
     temp_max = Daten["item"]["Temperature max"]["C"]
     temp_min = Daten["item"]["Temperature min"]["C"]
     sonne = Daten["item"]["Light ideal"]
-    print(details)
     return name,sciName,sonne,img,temp_max,temp_min
 
 
@@ -54,7 +49,6 @@ def getPflegeDaten(suchbegriff):
 
     response = rq.get(url, headers=headers, params=querystring)
 
-    print(response.json())
     if response.status_code == 200:
         return response.json()
     else:

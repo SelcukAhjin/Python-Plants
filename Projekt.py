@@ -5,6 +5,7 @@ from flet import TextField
 import api_service
 import Wetter_API as wa
 import time
+import threading
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -26,26 +27,23 @@ def main(page: ft.Page):
     wetterBeschreibung=ft.Text(wa.wetter().capitalize(),size=16, color="grey")
     wetterIcon=ft.Image(src=wa.icon(),width=100, height=100)
     wetterOrt = TextField(label="Geben Sie Ihre Stadt ein")
-    ladekreisSuche = ft.ProgressRing(width=20,height=20,visible=False)
-    ladekreisWetter = ft.ProgressRing(width=20,height=20,visible=False)
+    ladekreisSuche = ft.ProgressRing(width=20,height=20,visible=False,)
+    ladekreisWetter = ft.ProgressRing(width=20,height=20,visible=False, )
     vorhersageReihe = ft.Row(scroll="auto")
 
-
-    def wetterSuche(e):
-        ladekreisWetter.visible = True
-        ladekreisWetter.update()
+    def ladeDatenImHintergrund():
         wa.ladeWetterDaten(wetterOrt.value)
         wetterTempText.value=f"{wa.temperatur()}°C"
         wetterBeschreibung.value = wa.wetter().capitalize()
         wetterIcon.src = wa.icon()
-        wetterKarte.update()
         vorhersageReihe.controls.clear()
         wetterDatenListe = wa.durchDieListe()
+
         for eintrag in wetterDatenListe:
             wetterKarteKleinTemp = int(eintrag["main"]["temp"])
             wetterKarteKleinWetter = eintrag["weather"][0]["description"]
             wetterKarteKleinIcon = eintrag["weather"][0]["icon"]
-            
+
             datum_str = eintrag["dt_txt"]
             datum_obj = datetime.datetime.strptime(datum_str, "%Y-%m-%d %H:%M:%S")
             wochentag = datum_obj.strftime("%A")
@@ -70,8 +68,12 @@ def main(page: ft.Page):
             )
             vorhersageReihe.controls.append(kleineKarte)
         ladekreisWetter.visible = False
+        page.update()
+
+    def wetterSuche(e):
+        ladekreisWetter.visible=True
         ladekreisWetter.update()
-        vorhersageReihe.update()
+        page.run_thread(ladeDatenImHintergrund)
 
     wetterButton = ft.Button("Wetter für Stadt suchen", on_click=wetterSuche)
 
