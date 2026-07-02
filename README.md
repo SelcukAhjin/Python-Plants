@@ -34,3 +34,4 @@ To run this application locally, you will need **two separate API keys**:
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/SelcukAhjin/Python-Plants
+   ```
