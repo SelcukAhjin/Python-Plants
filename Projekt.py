@@ -4,8 +4,6 @@ import datetime
 from flet import TextField
 import api_service
 import Wetter_API as wa
-import time
-import threading
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -77,10 +75,7 @@ def main(page: ft.Page):
 
     wetterButton = ft.Button("Wetter für Stadt suchen", on_click=wetterSuche)
 
-
-    def buttonWurdeGeklickt(e):
-        ladekreisSuche.visible=True
-        ladekreisSuche.update()
+    def sucheImHintergrundStarten():
         meinLabel.value = f"Wird nach {meinEingabefeld.value} Gesucht"
         gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = api_service.suchePflanze(meinEingabefeld.value)
         ergebnisName.value = f"Gefunden: {gefundenerName1}"
@@ -107,11 +102,14 @@ def main(page: ft.Page):
             alarmText.color = ft.Colors.GREEN
             alarmTipp.visible = False
 
-        alarmText.update()
-        meinBild.update()
         ladekreisSuche.visible=False
-
         page.update()
+        
+
+    def buttonWurdeGeklickt(e):
+        ladekreisSuche.visible=True
+        ladekreisSuche.update()
+        page.run_thread(sucheImHintergrundStarten)
 
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)
 

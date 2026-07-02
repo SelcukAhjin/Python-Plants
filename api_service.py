@@ -42,7 +42,7 @@ def getPflegeDaten(suchbegriff):
     querystring = {"query": suchbegriff}
 
     headers = {
-        "x-rapidapi-key": "a70927f274msh397e20b6a7b44a4p1cd858jsnc7c0e69ce7a0",
+        "x-rapidapi-key": ak.API_KEY,
         "x-rapidapi-host": "house-plants2.p.rapidapi.com",
         "Content-Type": "application/json"
     }
