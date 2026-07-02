@@ -13,12 +13,12 @@ def main(page: ft.Page):
     page.window.width = 400
     page.window.height = 700
     wa.ladeWetterDaten("Berlin")
-    meinLabel = ft.Text(value ="Willkommen zum Botaniker", size=30 )
-    meinEingabefeld = ft.TextField(label="Nach welcher Pflanze suchen Sie ?")
+    Titel = ft.Text(value ="Willkommen zum Botaniker", size=30 )
+    PflanzenSucheFeld = ft.TextField(label="Nach welcher Pflanze suchen Sie ?")
     ergebnisName = ft.Text(value="")
     ergebnisBotanisch = ft.Text(value="")
     ergebnisSonne = ft.Text(value="")
-    meinBild = ft.Image(src="https://via.placeholder.com/150", width=200, height=200)
+    PflanzenBild = ft.Image(src="https://via.placeholder.com/150", width=200, height=200)
     alarmText = ft.Text(value="", weight="bold", size=16, visible=False)
     alarmTipp = ft.Text(value="", size=14, color=ft.Colors.GREY_400, italic=True, visible=False)
     wetterTempText = ft.Text(value=f"{wa.temperatur()}°C", size=40, weight="bold")
@@ -68,20 +68,14 @@ def main(page: ft.Page):
         ladekreisWetter.visible = False
         page.update()
 
-    def wetterSuche(e):
-        ladekreisWetter.visible=True
-        ladekreisWetter.update()
-        page.run_thread(ladeDatenImHintergrund)
-
-    wetterButton = ft.Button("Wetter für Stadt suchen", on_click=wetterSuche)
 
     def sucheImHintergrundStarten():
-        meinLabel.value = f"Wird nach {meinEingabefeld.value} Gesucht"
-        gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = api_service.suchePflanze(meinEingabefeld.value)
+        Titel.value = f"Wird nach {PflanzenSucheFeld.value} Gesucht"
+        gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = api_service.suchePflanze(PflanzenSucheFeld.value)
         ergebnisName.value = f"Gefunden: {gefundenerName1}"
         ergebnisBotanisch.value = f"Gefunden: {gefundenerName2}"
         ergebnisSonne.value= f"gefunden: {gefundeneSonne}"
-        meinBild.src = Bild
+        PflanzenBild.src = Bild
 
         if wa.temperatur() > maxtemp:
             alarmText.value = "Achtung: Es ist zu warm!"
@@ -89,6 +83,7 @@ def main(page: ft.Page):
             alarmText.color = ft.Colors.RED
             alarmTipp.value = "Tipp: Pflanze in denn Schatten"
             alarmTipp.visible = True
+
         elif wa.temperatur() < mintemp:
             alarmText.value = "Achtung: Es ist zu kalt!"
             alarmText.visible = True
@@ -104,7 +99,13 @@ def main(page: ft.Page):
 
         ladekreisSuche.visible=False
         page.update()
-        
+
+    def wetterSuche(e):
+        ladekreisWetter.visible=True
+        ladekreisWetter.update()
+        page.run_thread(ladeDatenImHintergrund)
+
+    wetterButton = ft.Button("Wetter für Stadt suchen", on_click=wetterSuche)
 
     def buttonWurdeGeklickt(e):
         ladekreisSuche.visible=True
@@ -112,6 +113,31 @@ def main(page: ft.Page):
         page.run_thread(sucheImHintergrundStarten)
 
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)
+
+    def pflanzeSpeichern(e):
+        nameSpeichern=ft.Text(value=ergebnisName.value)
+        botanischSpeichern=ft.Text(value=ergebnisBotanisch.value)
+        sonneSpeichern=ft.Text(value=ergebnisSonne.value)
+        bildSpeichern=ft.Image(src=PflanzenBild.src)
+        pflanzeSpeicherKarte = ft.Card(
+            elevation=5,
+            content=ft.Container(
+                padding=20,
+                content=ft.Column(
+                    controls=[
+                        bildSpeichern,
+                        nameSpeichern,
+                        botanischSpeichern,
+                        sonneSpeichern,
+                    ]
+                )
+            )
+        )
+
+        meinGartenSpalte.controls.append(pflanzeSpeicherKarte)
+        page.update()
+
+    inMeinGarten = ft.Button("In den Garten pflanzen", on_click=pflanzeSpeichern)
 
     wetterDatenListe = wa.durchDieListe()
     for eintrag in wetterDatenListe:
@@ -144,20 +170,7 @@ def main(page: ft.Page):
         )
         vorhersageReihe.controls.append(kleineKarte)
 
-    meineSucheSpalte = ft.Column(
-        controls = [
-            meinLabel,
-            meinEingabefeld,
-            ft.Row(controls=[meinButton,ladekreisSuche],),
-            ergebnisName,
-            ergebnisBotanisch,
-            ergebnisSonne,
-            meinBild,
-        ],
-        spacing=20,
-        scroll="auto",
-        expand=True,
-    )
+
 
     wetterKarte = ft.Card(
         elevation=5,
@@ -179,7 +192,21 @@ def main(page: ft.Page):
         )
     )
 
-
+    meineSucheSpalte = ft.Column(
+        controls = [
+            Titel,
+            PflanzenSucheFeld,
+            ft.Row(controls=[meinButton,ladekreisSuche],),
+            ergebnisName,
+            ergebnisBotanisch,
+            ergebnisSonne,
+            PflanzenBild,
+            inMeinGarten,
+        ],
+        spacing=10,
+        scroll="auto",
+        expand=True,
+    )
 
     meineWetterSpalte=ft.Column(
         controls=[
@@ -191,12 +218,22 @@ def main(page: ft.Page):
         ],
         spacing=10,
         scroll="auto",
+
+    )
+    meinGartenSpalte = ft.Column(
+        controls=[
+            spacingText,
+        ],
+        spacing=10,
+        scroll="auto",
         expand=True,
     )
+
     meineLeiste = ft.TabBar(
         tabs=[
             ft.Tab(label="Suche"),
             ft.Tab(label="Wetter"),
+            ft.Tab(label="Mein Garten")
         ]
     )
 
@@ -205,11 +242,12 @@ def main(page: ft.Page):
         controls=[
             meineSucheSpalte,
             meineWetterSpalte,
+            meinGartenSpalte
         ]
     )
 
     meinHauptOrdner = ft.Tabs(
-        length=2,
+        length=3,
         selected_index=0,
         expand=True,
         content=ft.Column(
@@ -217,7 +255,7 @@ def main(page: ft.Page):
             spacing=0,
             controls=[
                 meineLeiste,
-                meineInhalte
+                meineInhalte,
             ]
         )
     )
