@@ -111,6 +111,7 @@ def main(page: ft.Page):
         ladekreisSuche.visible=True
         ladekreisSuche.update()
         page.run_thread(sucheImHintergrundStarten)
+        inMeinGarten.visible=True
 
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)
 
@@ -137,7 +138,7 @@ def main(page: ft.Page):
         meinGartenSpalte.controls.append(pflanzeSpeicherKarte)
         page.update()
 
-    inMeinGarten = ft.Button("In den Garten pflanzen", on_click=pflanzeSpeichern)
+    inMeinGarten = ft.Button("In den Garten pflanzen", on_click=pflanzeSpeichern, visible=False)
 
     wetterDatenListe = wa.durchDieListe()
     for eintrag in wetterDatenListe:
