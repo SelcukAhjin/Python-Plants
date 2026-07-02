@@ -2,7 +2,7 @@ import requests as rq
 import API_KEY as ak
 
 
-def suchePflanze(suchbegriff):
+"""def suchePflanze(suchbegriff):
     mock_daten = {
         "temp_max":20,
         "temp_min": 15,
@@ -21,28 +21,40 @@ def suchePflanze(suchbegriff):
     bild = mock_daten["image_url"]
 
     return name, sciName, sonne, bild, temp_max, temp_min
-
-"""def suchePflanze(suchbegriff):
-    Daten = getRohDaten(suchbegriff)
-    print(Daten)
-    name = Daten["common_name"]
-    print(name)
-    sciName = Daten['scientific_name']
-    print(sciName)
-    id = Daten["id"]
-    details = getPflegeDaten(id)
-    print(details)
-    return name,sciName
 """
+
+def suchePflanze(suchbegriff):
+    Daten = getRohDaten(suchbegriff)
+    print(Daten.keys())
+    print(Daten)
+    name = Daten["item"]["Common name (fr.)"]
+    print(name)
+    sciName = Daten["item"]['Latin name']
+    print(sciName)
+    id = Daten["refIndex"]
+    details = getPflegeDaten(id)
+    img=Daten["item"]["Img"]
+    temp_max = Daten["item"]["Temperature max"]["C"]
+    temp_min = Daten["item"]["Temperature min"]["C"]
+    sonne = Daten["item"]["Light ideal"]
+    print(details)
+    return name,sciName,sonne,img,temp_max,temp_min
+
 
 def getPflegeDaten(suchbegriff):
     url = "https://house-plants2.p.rapidapi.com/search"
+
     querystring = {"query": suchbegriff}
+
     headers = {
-        "x-rapidapi-key": ak.API_KEY,
-        "x-rapidapi-host": "house-plants2.p.rapidapi.com"
+        "x-rapidapi-key": "a70927f274msh397e20b6a7b44a4p1cd858jsnc7c0e69ce7a0",
+        "x-rapidapi-host": "house-plants2.p.rapidapi.com",
+        "Content-Type": "application/json"
     }
+
     response = rq.get(url, headers=headers, params=querystring)
+
+    print(response.json())
     if response.status_code == 200:
         return response.json()
     else:
@@ -60,4 +72,4 @@ def getRohDaten(suchbegriff):
     daten_liste = response.json()
     return daten_liste[0]
 
-a=suchePflanze("monstera")
+a=suchePflanze("Monstera")

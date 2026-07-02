@@ -2,9 +2,9 @@ import flet as ft
 import ssl
 import datetime
 from flet import TextField
-
 import api_service
 import Wetter_API as wa
+import time
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -26,9 +26,14 @@ def main(page: ft.Page):
     wetterBeschreibung=ft.Text(wa.wetter().capitalize(),size=16, color="grey")
     wetterIcon=ft.Image(src=wa.icon(),width=100, height=100)
     wetterOrt = TextField(label="Geben Sie Ihre Stadt ein")
+    ladekreisSuche = ft.ProgressRing(width=20,height=20,visible=False)
+    ladekreisWetter = ft.ProgressRing(width=20,height=20,visible=False)
     vorhersageReihe = ft.Row(scroll="auto")
 
+
     def wetterSuche(e):
+        ladekreisWetter.visible = True
+        ladekreisWetter.update()
         wa.ladeWetterDaten(wetterOrt.value)
         wetterTempText.value=f"{wa.temperatur()}°C"
         wetterBeschreibung.value = wa.wetter().capitalize()
@@ -40,7 +45,7 @@ def main(page: ft.Page):
             wetterKarteKleinTemp = int(eintrag["main"]["temp"])
             wetterKarteKleinWetter = eintrag["weather"][0]["description"]
             wetterKarteKleinIcon = eintrag["weather"][0]["icon"]
-
+            
             datum_str = eintrag["dt_txt"]
             datum_obj = datetime.datetime.strptime(datum_str, "%Y-%m-%d %H:%M:%S")
             wochentag = datum_obj.strftime("%A")
@@ -64,11 +69,16 @@ def main(page: ft.Page):
                 )
             )
             vorhersageReihe.controls.append(kleineKarte)
+        ladekreisWetter.visible = False
+        ladekreisWetter.update()
         vorhersageReihe.update()
 
     wetterButton = ft.Button("Wetter für Stadt suchen", on_click=wetterSuche)
 
+
     def buttonWurdeGeklickt(e):
+        ladekreisSuche.visible=True
+        ladekreisSuche.update()
         meinLabel.value = f"Wird nach {meinEingabefeld.value} Gesucht"
         gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = api_service.suchePflanze(meinEingabefeld.value)
         ergebnisName.value = f"Gefunden: {gefundenerName1}"
@@ -97,7 +107,10 @@ def main(page: ft.Page):
 
         alarmText.update()
         meinBild.update()
+        ladekreisSuche.visible=False
+
         page.update()
+
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)
 
     wetterDatenListe = wa.durchDieListe()
@@ -135,7 +148,7 @@ def main(page: ft.Page):
         controls = [
             meinLabel,
             meinEingabefeld,
-            meinButton,
+            ft.Row(controls=[meinButton,ladekreisSuche],),
             ergebnisName,
             ergebnisBotanisch,
             ergebnisSonne,
@@ -172,7 +185,7 @@ def main(page: ft.Page):
         controls=[
             spacingText,
             wetterOrt,
-            wetterButton,
+            ft.Row(controls=[wetterButton,ladekreisWetter,],),
             wetterKarte,
             vorhersageReihe,
         ],
@@ -180,7 +193,6 @@ def main(page: ft.Page):
         scroll="auto",
         expand=True,
     )
-    # 1. Die Tab-Leiste (TabBar - nur für die Beschriftung zuständig)
     meineLeiste = ft.TabBar(
         tabs=[
             ft.Tab(label="Suche"),
@@ -188,7 +200,6 @@ def main(page: ft.Page):
         ]
     )
 
-    # 2. Die Tab-Ansicht (TabBarView - hier kommen die Spalten rein)
     meineInhalte = ft.TabBarView(
         expand=True,
         controls=[
