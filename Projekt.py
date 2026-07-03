@@ -135,6 +135,14 @@ async def main(page: ft.Page):
         botanischSpeichern=ft.Text(value=ergebnisBotanisch.value)
         sonneSpeichern=ft.Text(value=ergebnisSonne.value)
         bildSpeichern=ft.Image(src=PflanzenBild.src)
+
+        async def deleteButtonKlick(e):
+            await meinSpeicher.loeschePflanzen(e.control.data)
+            meinGartenSpalte.controls.remove(pflanzeSpeicherKarte)
+            page.update()
+
+        deleteButton = ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.RED, on_click=deleteButtonKlick)
+        deleteButton.data = nameSpeichern.value
         pflanzeSpeicherKarte = ft.Card(
             elevation=5,
             content=ft.Container(
@@ -145,6 +153,7 @@ async def main(page: ft.Page):
                         nameSpeichern,
                         botanischSpeichern,
                         sonneSpeichern,
+                        deleteButton,
                     ]
                 )
             )
