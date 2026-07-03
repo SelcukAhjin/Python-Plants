@@ -2,12 +2,16 @@ import flet as ft
 import ssl
 import datetime
 from flet import TextField
-import api_service
+import API_Service
+import LocalSpeicher
 import Wetter_API as wa
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-def main(page: ft.Page):
+async def main(page: ft.Page):
+
+    meinSpeicher = LocalSpeicher.LocalSpeicher(page)
+
     spacingText=ft.Text(value="")
     page.title = "Flower Power At your Hour"
     page.window.width = 400
@@ -71,13 +75,13 @@ def main(page: ft.Page):
 
     def sucheImHintergrundStarten():
         Titel.value = f"Wird nach {PflanzenSucheFeld.value} Gesucht"
-        gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = api_service.suchePflanze(PflanzenSucheFeld.value)
+        gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = API_Service.suchePflanze(PflanzenSucheFeld.value)
         ergebnisName.value = f"Gefunden: {gefundenerName1}"
         if gefundenerName1 == "Pflanze nicht gefunden":
             ergebnisName.value = "Pflanze leider nicht gefunden."
             ergebnisBotanisch.value=""
             ergebnisSonne.value=""
-            PflanzenBild.src="http//via.placeholder.com/150"
+            PflanzenBild.src="http://via.placeholder.com/150"
             alarmText.visible = False
             alarmTipp.visible = False
             ladekreisSuche.visible = False
@@ -126,7 +130,7 @@ def main(page: ft.Page):
 
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)
 
-    def pflanzeSpeichern(e):
+    async def pflanzeSpeichern(e):
         nameSpeichern=ft.Text(value=ergebnisName.value)
         botanischSpeichern=ft.Text(value=ergebnisBotanisch.value)
         sonneSpeichern=ft.Text(value=ergebnisSonne.value)
@@ -147,6 +151,14 @@ def main(page: ft.Page):
         )
 
         meinGartenSpalte.controls.append(pflanzeSpeicherKarte)
+        neuePflanzeDaten = {
+            "name": ergebnisName.value,
+            "botanisch": ergebnisBotanisch.value,
+            "sonne": ergebnisSonne.value,
+            "bildUrl": PflanzenBild.src
+        }
+
+        await meinSpeicher.speicherePflanzen(neuePflanzeDaten)
         page.update()
 
     inMeinGarten = ft.Button("In den Garten pflanzen", on_click=pflanzeSpeichern, visible=False)
@@ -232,14 +244,12 @@ def main(page: ft.Page):
         scroll="auto",
 
     )
-    meinGartenSpalte = ft.Column(
-        controls=[
-            spacingText,
-        ],
-        spacing=10,
-        scroll="auto",
-        expand=True,
-    )
+    meinGartenSpalte = await meinSpeicher.ladeGarten()
+
+    meinGartenSpalte.spacing = 10
+    meinGartenSpalte.scroll = "auto"
+    meinGartenSpalte.expand = True
+
 
     meineLeiste = ft.TabBar(
         tabs=[
