@@ -25,34 +25,16 @@ import API_KEY as ak
 
 def suchePflanze(suchbegriff):
     Daten = getRohDaten(suchbegriff)
+    if Daten is None:
+        return "Pflanze nicht gefunden", "", "", "[https://via.placeholder.com/150](https://via.placeholder.com/150)", 0, 0
     name = Daten["item"]["Common name (fr.)"]
     sciName = Daten["item"]['Latin name']
     id = Daten["refIndex"]
-    details = getPflegeDaten(id)
     img=Daten["item"]["Img"]
     temp_max = Daten["item"]["Temperature max"]["C"]
     temp_min = Daten["item"]["Temperature min"]["C"]
     sonne = Daten["item"]["Light ideal"]
     return name,sciName,sonne,img,temp_max,temp_min
-
-
-def getPflegeDaten(suchbegriff):
-    url = "https://house-plants2.p.rapidapi.com/search"
-
-    querystring = {"query": suchbegriff}
-
-    headers = {
-        "x-rapidapi-key": ak.API_KEY,
-        "x-rapidapi-host": "house-plants2.p.rapidapi.com",
-        "Content-Type": "application/json"
-    }
-
-    response = rq.get(url, headers=headers, params=querystring)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return None
 
 def getRohDaten(suchbegriff):
     url = "https://house-plants2.p.rapidapi.com/search"
@@ -63,7 +45,10 @@ def getRohDaten(suchbegriff):
     querystring = {"query": suchbegriff}
     response = rq.get(url, headers=headers, params=querystring)
 
-    daten_liste = response.json()
-    return daten_liste[0]
+    try:
+        daten_liste = response.json()
+        return daten_liste[0]
+    except IndexError:
+        return None
 
 a=suchePflanze("Monstera")
