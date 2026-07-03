@@ -73,6 +73,17 @@ def main(page: ft.Page):
         Titel.value = f"Wird nach {PflanzenSucheFeld.value} Gesucht"
         gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = api_service.suchePflanze(PflanzenSucheFeld.value)
         ergebnisName.value = f"Gefunden: {gefundenerName1}"
+        if gefundenerName1 == "Pflanze nicht gefunden":
+            ergebnisName.value = "Pflanze leider nicht gefunden."
+            ergebnisBotanisch.value=""
+            ergebnisSonne.value=""
+            PflanzenBild.src="http//via.placeholder.com/150"
+            alarmText.visible = False
+            alarmTipp.visible = False
+            ladekreisSuche.visible = False
+            inMeinGarten.visible = False
+            page.update()
+            return
         ergebnisBotanisch.value = f"Gefunden: {gefundenerName2}"
         ergebnisSonne.value= f"gefunden: {gefundeneSonne}"
         PflanzenBild.src = Bild
