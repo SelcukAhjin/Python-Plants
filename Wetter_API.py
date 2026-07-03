@@ -15,28 +15,37 @@ def durchDieListe():
     global answer
     counter=0
     neueListe=[]
-    liste = answer.json()["list"]
-    for wetterTage in liste:
-        if "12:00:00" in wetterTage["dt_txt"]:
-            neueListe.append(wetterTage)
-            if(counter==len(neueListe)):
-                break
-    return neueListe
-
+    try:
+        liste = answer.json()["list"]
+        for wetterTage in liste:
+            if "12:00:00" in wetterTage["dt_txt"]:
+                neueListe.append(wetterTage)
+                if(counter==len(neueListe)):
+                    break
+        return neueListe
+    except KeyError:
+        return []
 
 def wetter():
-    global anwerWeather
-    wetter = answerWeather.json()["weather"][0]["description"]
-    return wetter
-
+    global answerWeather
+    try:
+        wetter = answerWeather.json()["weather"][0]["description"]
+        return wetter
+    except KeyError:
+        return "Ort nicht gefunden"
 
 def temperatur():
     global answerWeather
-    temperatur = int(answerWeather.json()["main"]["temp"])
-    return temperatur
-
+    try:
+        temperatur = int(answerWeather.json()["main"]["temp"])
+        return temperatur
+    except KeyError:
+        return -99
 
 def icon():
     global answerWeather
-    icon = answerWeather.json()["weather"][0]["icon"]
-    return f"https://openweathermap.org/img/wn/{icon}@2x.png"
+    try:
+        icon = answerWeather.json()["weather"][0]["icon"]
+        return f"https://openweathermap.org/img/wn/{icon}@2x.png"
+    except KeyError:
+        return "https://via.placeholder.com/150"
