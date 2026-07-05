@@ -26,13 +26,12 @@ class LocalSpeicher:
             sonneSpeichern = ft.Text(value=pflanzen["sonne"])
             bildSpeichern = ft.Image(src=pflanzen["bildUrl"])
             async def deleteButtonKlick(e):
-                await self.loeschePflanzen(e.control.data)
-                meinGartenSpalte.controls.remove(pflanzeSpeicherKarte)
+                await self.loeschePflanzen(e.control.data["name"])
+                meinGartenSpalte.controls.remove(e.control.data["karte"])
                 self.page.update()
 
 
             deleteButton = ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.RED, on_click=deleteButtonKlick)
-            deleteButton.data = nameSpeichern.value
             pflanzeSpeicherKarte = ft.Card(
                 elevation=5,
                 content=ft.Container(
@@ -48,6 +47,7 @@ class LocalSpeicher:
                     )
                 )
             )
+            deleteButton.data = Dict = {"name":nameSpeichern.value,"karte":pflanzeSpeicherKarte}
             meinGartenSpalte.controls.append(pflanzeSpeicherKarte)
         return meinGartenSpalte
 

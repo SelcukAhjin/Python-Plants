@@ -137,12 +137,11 @@ async def main(page: ft.Page):
         bildSpeichern=ft.Image(src=PflanzenBild.src)
 
         async def deleteButtonKlick(e):
-            await meinSpeicher.loeschePflanzen(e.control.data)
-            meinGartenSpalte.controls.remove(pflanzeSpeicherKarte)
+            await meinSpeicher.loeschePflanzen(e.control.data["name"])
+            meinGartenSpalte.controls.remove(e.control.data["karte"])
             page.update()
 
         deleteButton = ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.RED, on_click=deleteButtonKlick)
-        deleteButton.data = nameSpeichern.value
         pflanzeSpeicherKarte = ft.Card(
             elevation=5,
             content=ft.Container(
@@ -158,6 +157,8 @@ async def main(page: ft.Page):
                 )
             )
         )
+
+        deleteButton.data = dict = {"name":nameSpeichern.value,"karte":pflanzeSpeicherKarte}
 
         meinGartenSpalte.controls.append(pflanzeSpeicherKarte)
         neuePflanzeDaten = {
