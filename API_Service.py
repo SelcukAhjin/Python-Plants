@@ -37,14 +37,17 @@ def suchePflanze(suchbegriff):
     return name,sciName,sonne,img,temp_max,temp_min
 
 def getRohDaten(suchbegriff):
-    url = "https://house-plants2.p.rapidapi.com/search"
-    headers = {
-        "x-rapidapi-key": ak.API_KEY,
-        "x-rapidapi-host": "house-plants2.p.rapidapi.com"
-    }
-    querystring = {"query": suchbegriff}
-    response = rq.get(url, headers=headers, params=querystring)
-
+    try:
+        url = "https://house-plants2.p.rapidapi.com/search"
+        headers = {
+            "x-rapidapi-key": ak.API_KEY,
+            "x-rapidapi-host": "house-plants2.p.rapidapi.com"
+        }
+        querystring = {"query": suchbegriff}
+        response = rq.get(url, headers=headers, params=querystring)
+        answer.raise_for_status(response)
+    except rq.exceptions.RequestException:
+        return None
     try:
         daten_liste = response.json()
         return daten_liste[0]

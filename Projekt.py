@@ -30,7 +30,7 @@ async def main(page: ft.Page):
     wetterIcon=ft.Image(src=wa.icon(),width=100, height=100)
     wetterOrt = TextField(label="Geben Sie Ihre Stadt ein")
     ladekreisSuche = ft.ProgressRing(width=20,height=20,visible=False,)
-    ladekreisWetter = ft.ProgressRing(width=20,height=20,visible=False, )
+    ladekreisWetter = ft.ProgressRing(width=20,height=20,visible=False,)
     vorhersageReihe = ft.Row(scroll="auto")
 
     def ladeDatenImHintergrund():
@@ -105,6 +105,9 @@ async def main(page: ft.Page):
             alarmText.color = ft.Colors.RED
             alarmTipp.value = "Tipp: Pflanze am besten reinnehmen"
             alarmTipp.visible = True
+            if wa.temperatur() == -99:
+                alarmTipp.visible = False
+                alarmText.visible = False
 
         else:
             alarmText.value = "Temperatur ist optimal!"
