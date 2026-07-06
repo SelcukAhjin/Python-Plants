@@ -45,7 +45,7 @@ def getRohDaten(suchbegriff):
         }
         querystring = {"query": suchbegriff}
         response = rq.get(url, headers=headers, params=querystring)
-        answer.raise_for_status(response)
+        response.raise_for_status()
     except rq.exceptions.RequestException:
         return None
     try:

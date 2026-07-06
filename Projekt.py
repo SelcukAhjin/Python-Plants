@@ -92,22 +92,27 @@ async def main(page: ft.Page):
         ergebnisSonne.value= f"gefunden: {gefundeneSonne}"
         PflanzenBild.src = Bild
 
-        if wa.temperatur() > maxtemp:
+        temp = wa.temperatur()
+
+        if temp == -99:
+            alarmText.visible = True
+            alarmText.value = "Keine Wetterdaten verfügbar"
+
+
+        elif temp > maxtemp:
             alarmText.value = "Achtung: Es ist zu warm!"
             alarmText.visible = True
             alarmText.color = ft.Colors.RED
             alarmTipp.value = "Tipp: Pflanze in denn Schatten"
             alarmTipp.visible = True
 
-        elif wa.temperatur() < mintemp:
+        elif temp < mintemp:
             alarmText.value = "Achtung: Es ist zu kalt!"
             alarmText.visible = True
             alarmText.color = ft.Colors.RED
             alarmTipp.value = "Tipp: Pflanze am besten reinnehmen"
             alarmTipp.visible = True
-            if wa.temperatur() == -99:
-                alarmTipp.visible = False
-                alarmText.visible = False
+
 
         else:
             alarmText.value = "Temperatur ist optimal!"

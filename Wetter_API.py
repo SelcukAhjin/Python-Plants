@@ -1,14 +1,17 @@
 import requests as rq
 import API_KEY as ak
 
-global response,responseWeather
+response=None
+responseWeather=None
 
 print(dir(rq.exceptions))
 def ladeWetterDaten(sucheStadt):
     global responseWeather,response
     try:
         response=rq.get(f"https://api.openweathermap.org/data/2.5/forecast?q={sucheStadt}&appid={ak.wetter_api_key}&units=metric")
+        response.raise_for_status()
         responseWeather=rq.get(f"https://api.openweathermap.org/data/2.5/weather?q={sucheStadt}&appid={ak.wetter_api_key}&units=metric")
+        responseWeather.raise_for_status()
     except rq.exceptions.RequestException:
         return None
 
@@ -26,7 +29,7 @@ def durchDieListe():
                 if(counter==len(neueListe)):
                     break
         return neueListe
-    except KeyError:
+    except (KeyError,AttributeError):
         return []
 
 def wetter():
@@ -34,7 +37,7 @@ def wetter():
     try:
         wetter = responseWeather.json()["weather"][0]["description"]
         return wetter
-    except KeyError:
+    except (KeyError,AttributeError):
         return "Ort nicht gefunden"
 
 def temperatur():
@@ -42,7 +45,7 @@ def temperatur():
     try:
         temperatur = int(responseWeather.json()["main"]["temp"])
         return temperatur
-    except KeyError:
+    except ((KeyError,AttributeError)):
         return -99
 
 def icon():
@@ -50,5 +53,5 @@ def icon():
     try:
         icon = responseWeather.json()["weather"][0]["icon"]
         return f"https://openweathermap.org/img/wn/{icon}@2x.png"
-    except KeyError:
+    except (KeyError,AttributeError):
         return "https://via.placeholder.com/150"
