@@ -4,7 +4,6 @@ import API_KEY as ak
 response=None
 responseWeather=None
 
-print(dir(rq.exceptions))
 def ladeWetterDaten(sucheStadt):
     global responseWeather,response
     try:
