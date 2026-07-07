@@ -85,8 +85,6 @@ async def main(page: ft.Page):
         uebersetzter=GoogleTranslator(source="de",target="en")
         Titel.value = f"Wird nach {PflanzenSucheFeld.value} Gesucht"
         gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = API_Service.suchePflanze(uebersetzter.translate(PflanzenSucheFeld.value))
-        aktuelle_mintemp = mintemp
-        aktuelle_maxtemp = maxtemp
         ergebnisName.value = f"Gefunden: {gefundenerName1}"
         if gefundenerName1 == "Pflanze nicht gefunden":
             ergebnisName.value = "Pflanze leider nicht gefunden."
