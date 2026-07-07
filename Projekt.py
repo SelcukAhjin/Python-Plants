@@ -6,16 +6,19 @@ import API_Service
 import LocalSpeicher
 import Wetter_API as wa
 
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 async def main(page: ft.Page):
-
     meinSpeicher = LocalSpeicher.LocalSpeicher(page)
 
     spacingText=ft.Text(value="")
     page.title = "Flower Power At your Hour"
     page.window.width = 400
     page.window.height = 700
+    page.window.maximizable = False
+    page.window.resizable = False
+    page.update()
     wa.ladeWetterDaten("Berlin")
     Titel = ft.Text(value ="Willkommen zum Botaniker", size=30 )
     PflanzenSucheFeld = ft.TextField(label="Nach welcher Pflanze suchen Sie ?")
