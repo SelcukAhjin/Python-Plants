@@ -12,6 +12,8 @@ def ladeWetterDaten(sucheStadt):
         responseWeather=rq.get(f"https://api.openweathermap.org/data/2.5/weather?q={sucheStadt}&appid={ak.wetter_api_key}&units=metric")
         responseWeather.raise_for_status()
     except rq.exceptions.RequestException:
+        response = None
+        responseWeather = None
         return None
 
 

@@ -5,6 +5,7 @@ from flet import TextField
 import API_Service
 import LocalSpeicher
 import Wetter_API as wa
+from deep_translator import GoogleTranslator as gt, GoogleTranslator
 
 
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -77,8 +78,9 @@ async def main(page: ft.Page):
 
 
     def sucheImHintergrundStarten():
+        uebersetzter=GoogleTranslator(source="de",target="en")
         Titel.value = f"Wird nach {PflanzenSucheFeld.value} Gesucht"
-        gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = API_Service.suchePflanze(PflanzenSucheFeld.value)
+        gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = API_Service.suchePflanze(uebersetzter.translate(PflanzenSucheFeld.value))
         ergebnisName.value = f"Gefunden: {gefundenerName1}"
         if gefundenerName1 == "Pflanze nicht gefunden":
             ergebnisName.value = "Pflanze leider nicht gefunden."
