@@ -112,7 +112,7 @@ async def main(page: ft.Page):
 
     def alarmPruefen():
         if aktuelle_maxtemp is None or aktuelle_mintemp is None:
-            return  # Wenn noch keine Pflanze gesucht wurde, brechen wir hier einfach ab.
+            return
 
         temp = wa.temperatur()
 
