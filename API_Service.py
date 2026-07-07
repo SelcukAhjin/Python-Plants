@@ -2,6 +2,7 @@ import requests as rq
 import API_KEY as ak
 
 
+
 """def suchePflanze(suchbegriff):
     mock_daten = {
         "temp_max":20,
@@ -53,5 +54,3 @@ def getRohDaten(suchbegriff):
         return daten_liste[0]
     except IndexError:
         return None
-
-a=suchePflanze("Monstera")

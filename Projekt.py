@@ -26,6 +26,8 @@ async def main(page: ft.Page):
     ergebnisName = ft.Text(value="")
     ergebnisBotanisch = ft.Text(value="")
     ergebnisSonne = ft.Text(value="")
+    aktuelle_maxtemp = None
+    aktuelle_mintemp = None
     PflanzenBild = ft.Image(src="https://via.placeholder.com/150", width=200, height=200)
     alarmText = ft.Text(value="", weight="bold", size=16, visible=False)
     alarmTipp = ft.Text(value="", size=14, color=ft.Colors.GREY_400, italic=True, visible=False)
@@ -73,14 +75,18 @@ async def main(page: ft.Page):
                 )
             )
             vorhersageReihe.controls.append(kleineKarte)
+        alarmPruefen()
         ladekreisWetter.visible = False
         page.update()
 
 
     def sucheImHintergrundStarten():
+        nonlocal aktuelle_maxtemp, aktuelle_mintemp
         uebersetzter=GoogleTranslator(source="de",target="en")
         Titel.value = f"Wird nach {PflanzenSucheFeld.value} Gesucht"
         gefundenerName1,gefundenerName2,gefundeneSonne,Bild,maxtemp, mintemp = API_Service.suchePflanze(uebersetzter.translate(PflanzenSucheFeld.value))
+        aktuelle_mintemp = mintemp
+        aktuelle_maxtemp = maxtemp
         ergebnisName.value = f"Gefunden: {gefundenerName1}"
         if gefundenerName1 == "Pflanze nicht gefunden":
             ergebnisName.value = "Pflanze leider nicht gefunden."
@@ -97,35 +103,40 @@ async def main(page: ft.Page):
         ergebnisSonne.value= f"gefunden: {gefundeneSonne}"
         PflanzenBild.src = Bild
 
+        aktuelle_maxtemp = maxtemp
+        aktuelle_mintemp = mintemp
+        alarmPruefen()
+
+        ladekreisSuche.visible=False
+        page.update()
+
+    def alarmPruefen():
+        if aktuelle_maxtemp is None or aktuelle_mintemp is None:
+            return  # Wenn noch keine Pflanze gesucht wurde, brechen wir hier einfach ab.
+
         temp = wa.temperatur()
 
         if temp == -99:
             alarmText.visible = True
             alarmText.value = "Keine Wetterdaten verfügbar"
-
-
-        elif temp > maxtemp:
+        elif temp >= aktuelle_maxtemp:
             alarmText.value = "Achtung: Es ist zu warm!"
             alarmText.visible = True
             alarmText.color = ft.Colors.RED
-            alarmTipp.value = "Tipp: Pflanze in denn Schatten"
+            alarmTipp.value = "Tipp: Pflanze in den Schatten"
             alarmTipp.visible = True
-
-        elif temp < mintemp:
+        elif temp <= aktuelle_mintemp:
             alarmText.value = "Achtung: Es ist zu kalt!"
             alarmText.visible = True
             alarmText.color = ft.Colors.RED
             alarmTipp.value = "Tipp: Pflanze am besten reinnehmen"
             alarmTipp.visible = True
-
-
         else:
             alarmText.value = "Temperatur ist optimal!"
-            alarmText.visible = False
+            alarmText.visible = True
             alarmText.color = ft.Colors.GREEN
             alarmTipp.visible = False
 
-        ladekreisSuche.visible=False
         page.update()
 
     def wetterSuche(e):
