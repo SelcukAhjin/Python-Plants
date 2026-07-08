@@ -39,7 +39,7 @@ async def main(page: ft.Page):
     ladekreisWetter = ft.ProgressRing(width=20,height=20,visible=False,)
     vorhersageReihe = ft.Row(scroll="auto")
 
-    def ladeDatenImHintergrund():
+    def wetterImHintergrund():
         wa.ladeWetterDaten(wetterOrt.value)
         wetterTempText.value=f"{wa.temperatur()}°C"
         wetterBeschreibung.value = wa.wetter().capitalize()
@@ -80,7 +80,7 @@ async def main(page: ft.Page):
         page.update()
 
 
-    def sucheImHintergrundStarten():
+    def sucheImHintergrund():
         nonlocal aktuelle_maxtemp, aktuelle_mintemp
         uebersetzter=GoogleTranslator(source="de",target="en")
         Titel.value = f"Wird nach {PflanzenSucheFeld.value} Gesucht"
@@ -140,14 +140,14 @@ async def main(page: ft.Page):
     def wetterSuche(e):
         ladekreisWetter.visible=True
         ladekreisWetter.update()
-        page.run_thread(ladeDatenImHintergrund)
+        page.run_thread(wetterImHintergrund)
 
     wetterButton = ft.Button("Wetter für Stadt suchen", on_click=wetterSuche)
 
     def buttonWurdeGeklickt(e):
         ladekreisSuche.visible=True
         ladekreisSuche.update()
-        page.run_thread(sucheImHintergrundStarten)
+        page.run_thread(sucheImHintergrund)
         inMeinGarten.visible=True
 
     meinButton = ft.Button("Suche Starten", on_click=buttonWurdeGeklickt)
